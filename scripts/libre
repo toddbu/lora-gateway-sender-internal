@@ -1,0 +1,14 @@
+#!/bin/bash
+
+if [ ! -f libre-creds ]; then
+  echo 'Please create a file called "libre-creds" that contains the following two lines:'
+  echo 'LIBRE_EMAIL="me@example.com"'
+  echo 'LIBRE_PASSWORD="mypassword"'
+  exit 1
+fi
+
+source libre-creds
+
+export TOKEN=$(curl -s -X POST -H 'content-type: application/json' -H 'product: llu.android' -H 'version: 4.9.0' --data "{\"email\":\"${LIBRE_EMAIL}\",\"password\": \"${LIBRE_PASSWORD}\"}" https://api.libreview.io//llu/auth/login | node -e "const fs=require('fs');const obj=JSON.parse(fs.readFileSync('/dev/stdin').toString());console.log(obj.data.authTicket.token)")
+curl -s -X GET -H "Authorization: Bearer ${TOKEN}" -H 'content-type: application/json' -H 'product: llu.android' -H 'version: 4.9.0' https://api.libreview.io/llu/connections | node -e "const fs=require('fs');const obj=JSON.parse(fs.readFileSync('/dev/stdin').toString());console.log(obj.data[0].glucoseMeasurement.ValueInMgPerDl)"
+# curl -s -X GET -H "Authorization: Bearer $TOKEN" -H 'content-type: application/json' -H 'product: llu.android' -H 'version: 4.9.0' https://api.libreview.io/llu/connections/d2187354-cd16-11ee-adfe-6a0664282f6f/graph
