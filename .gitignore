@@ -1,2 +1,5 @@
 .DS_Store
+._*
+credentials.*
 libre-creds
+node_modules/

@@ -9,8 +9,10 @@ fi
 
 source libre-creds
 
-export TOKEN=$(curl -s -X POST -H 'content-type: application/json' -H 'product: llu.android' -H 'version: 4.9.0' --data "{\"email\":\"${LIBRE_EMAIL}\",\"password\": \"${LIBRE_PASSWORD}\"}" https://api.libreview.io//llu/auth/login | node -e "const fs=require('fs');const obj=JSON.parse(fs.readFileSync('/dev/stdin').toString());console.log(obj.data.authTicket.token)")
-curl -s -X GET -H "Authorization: Bearer ${TOKEN}" -H 'content-type: application/json' -H 'product: llu.android' -H 'version: 4.9.0' https://api.libreview.io/llu/connections | node -e "const fs=require('fs');const obj=JSON.parse(fs.readFileSync('/dev/stdin').toString());console.log(obj.data[0].glucoseMeasurement.ValueInMgPerDl)"
+set -x
+curl -i -v -X POST -H 'content-type: application/json' -H 'product: llu.android' -H 'version: 4.9.0' --data "{\"email\":\"${LIBRE_EMAIL}\",\"password\": \"${LIBRE_PASSWORD}\"}" https://api.libreview.io/llu/auth/login
+# export TOKEN=$(curl -s -X POST -H 'content-type: application/json' -H 'product: llu.android' -H 'version: 4.9.0' --data "{\"email\":\"${LIBRE_EMAIL}\",\"password\": \"${LIBRE_PASSWORD}\"}" https://api.libreview.io/llu/auth/login | node -e "const fs=require('fs');const obj=JSON.parse(fs.readFileSync('/dev/stdin').toString());console.log(obj.data.authTicket.token)")
+# curl -s -X GET -H "Authorization: Bearer ${TOKEN}" -H 'content-type: application/json' -H 'product: llu.android' -H 'version: 4.9.0' https://api.libreview.io/llu/connections | node -e "const fs=require('fs');const obj=JSON.parse(fs.readFileSync('/dev/stdin').toString());console.log(obj.data[0].glucoseMeasurement.ValueInMgPerDl)"
 # curl -s -X GET -H "Authorization: Bearer ${TOKEN}" -H 'content-type: application/json' -H 'product: llu.android' -H 'version: 4.9.0' https://api.libreview.io/llu/connections | node -e "const fs=require('fs');const obj=JSON.parse(fs.readFileSync('/dev/stdin').toString());console.log(obj.data[0].glucoseMeasurement.Timestamp)"
 # curl -s -X GET -H "Authorization: Bearer ${TOKEN}" -H 'content-type: application/json' -H 'product: llu.android' -H 'version: 4.9.0' https://api.libreview.io/llu/connections
 # curl -s -X GET -H "Authorization: Bearer $TOKEN" -H 'content-type: application/json' -H 'product: llu.android' -H 'version: 4.9.0' https://api.libreview.io/llu/connections/d2187354-cd16-11ee-adfe-6a0664282f6f/graph
