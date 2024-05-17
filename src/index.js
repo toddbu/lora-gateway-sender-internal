@@ -65,7 +65,8 @@ function run() {
 
           const mgPerDl = body.data[0].glucoseMeasurement.ValueInMgPerDl
           const timestamp = new Date(body.data[0].glucoseMeasurement.Timestamp)
-          console.log(`Reading of ${mgPerDl} mg/dL taken at ${new Date(timestamp).toISOString()}`)
+          const trendArrow = body.data[0].glucoseMeasurement.TrendArrow
+          console.log(`Reading of ${mgPerDl} mg/dL (${trendArrow}) taken at ${new Date(timestamp).toISOString()}`)
 
           return callback(null)
         })
