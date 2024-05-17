@@ -2,10 +2,17 @@
 
 const async = require('async')
 const request = require('request')
+const cassandra = require('cassandra-driver')
 const { email, password } = require('./credentials')
 
 let token
 let tokenExpires = 0
+
+const client = new cassandra.Client({
+  contactPoints: ['10.0.0.80'],
+  localDataCenter: 'datacenter1',
+  keyspace: 'cgm'
+})
 
 const options = {
   headers: {
@@ -63,12 +70,30 @@ function run() {
             return callback(new Error(`Bad connections HTTP response: ${response && response.statusCode}`))
           }
 
-          const mgPerDl = body.data[0].glucoseMeasurement.ValueInMgPerDl
-          const timestamp = new Date(body.data[0].glucoseMeasurement.Timestamp)
-          const trendArrow = body.data[0].glucoseMeasurement.TrendArrow
+          const data = body.data[0]
+          const patientId = data.patientId
+          const serialNumber = data.sensor.sn
+          const mgPerDl = data.glucoseMeasurement.ValueInMgPerDl
+          const timestamp = new Date(data.glucoseMeasurement.Timestamp)
+          const trendArrow = data.glucoseMeasurement.TrendArrow
           console.log(`Reading of ${mgPerDl} mg/dL (${trendArrow}) taken at ${new Date(timestamp).toISOString()}`)
 
-          return callback(null)
+          const query = 'INSERT INTO cgm.readings (patient_id, timestamp, mg_per_dl, serial_number, trend_arrow) VALUES (?, ?, ?, ?, ?)'
+          const params = [
+            patientId,
+            timestamp,
+            mgPerDl,
+            serialNumber,
+            trendArrow
+          ]
+
+          client.execute(query, params, { prepare: true }, (err) => {
+            if (err) {
+              console.log(err)
+            }
+
+            return callback(null)
+          })
         })
       }
     ],
