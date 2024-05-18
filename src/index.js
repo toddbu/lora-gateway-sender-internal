@@ -35,8 +35,6 @@ function run() {
             email,
             password
           }
-          loginOptions['email'] = email
-          loginOptions['passwprd'] = password
           return request.post('https://api.libreview.io/llu/auth/login', loginOptions, (err, response, body) => {
             if (err) {
               return callback(err)
